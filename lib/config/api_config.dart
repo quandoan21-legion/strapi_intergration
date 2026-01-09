@@ -3,6 +3,10 @@ class ApiConfig {
     'STRAPI_BASE_URL',
     defaultValue: 'http://localhost:1337',
   );
+  static const String apiToken = String.fromEnvironment(
+    'STRAPI_API_TOKEN',
+    defaultValue: '',
+  );
 
   static String get apiBaseUrl => '$baseUrl/api';
   static String get eventsEndpoint => '$apiBaseUrl/events';

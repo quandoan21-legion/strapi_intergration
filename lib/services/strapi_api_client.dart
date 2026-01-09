@@ -32,7 +32,7 @@ class StrapiApiClient {
     final uri = Uri.parse(
       ApiConfig.eventsEndpoint,
     ).replace(queryParameters: params);
-    final response = await _client.get(uri);
+    final response = await _client.get(uri, headers: _headers());
     _throwIfNecessary(response);
     final decoded = _decode(response);
     return ApiListResponse<Event>.fromJson(
@@ -46,7 +46,7 @@ class StrapiApiClient {
     final uri = Uri.parse(
       ApiConfig.categoriesEndpoint,
     ).replace(queryParameters: params);
-    final response = await _client.get(uri);
+    final response = await _client.get(uri, headers: _headers());
     _throwIfNecessary(response);
     final decoded = _decode(response);
     final data = (decoded['data'] as List<dynamic>? ?? <dynamic>[])
@@ -77,7 +77,7 @@ class StrapiApiClient {
     final uri = Uri.parse(ApiConfig.registrationsEndpoint);
     final response = await _client.post(
       uri,
-      headers: {'Content-Type': 'application/json'},
+      headers: _headers(contentTypeJson: true),
       body: jsonEncode(payload),
     );
     _throwIfNecessary(response);
@@ -96,6 +96,17 @@ class StrapiApiClient {
       message: 'Strapi request failed (${response.statusCode})',
       statusCode: response.statusCode,
     );
+  }
+
+  Map<String, String> _headers({bool contentTypeJson = false}) {
+    final headers = <String, String>{};
+    if (contentTypeJson) {
+      headers['Content-Type'] = 'application/json';
+    }
+    if (ApiConfig.apiToken.isNotEmpty) {
+      headers['Authorization'] = 'Bearer ${ApiConfig.apiToken}';
+    }
+    return headers;
   }
 
   void dispose() {
